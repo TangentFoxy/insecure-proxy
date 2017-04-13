@@ -3,7 +3,7 @@ http = require "lapis.nginx.http"
 
 class extends lapis.Application
   "/get/*": =>
-    splat = @params.splat
+    splat = @params.splat\gsub "https:/", "https://"
     @params.splat = nil
 
     request_string = "?"
