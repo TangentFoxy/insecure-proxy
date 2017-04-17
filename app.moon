@@ -3,7 +3,11 @@ http = require "lapis.nginx.http"
 
 class extends lapis.Application
   "/get/*": =>
-    splat = @params.splat\gsub "https:/", "https://"
+    local splat
+    if @params.splat\find "https://"
+      splat = @params.splat
+    else
+      splat = @params.splat\gsub "https:/", "https://"
     @params.splat = nil
 
     request_string = "?"
@@ -17,7 +21,11 @@ class extends lapis.Application
     -- todo return with same headers?
 
   "/test/*": =>
-    splat = @params.splat\gsub "https:/", "https://"
+    local splat
+    if @params.splat\find "https://"
+      splat = @params.splat
+    else
+      splat = @params.splat\gsub "https:/", "https://"
     @params.splat = nil
 
     request_string = "?"
