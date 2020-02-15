@@ -1,36 +1,28 @@
 lapis = require "lapis"
 http = require "lapis.nginx.http"
 
+parse_url = =>
+  local splat
+  if @params.splat\find "https://"
+    splat = @params.splat
+  else
+    splat = @params.splat\gsub "https:/", "https://"
+  @params.splat = nil
+
+  request_string = "?"
+  for key, value in pairs @params
+    request_string ..= "#{key}=#{value}&"
+  request_string = request_string\sub 1, -2
+
+  return "#{splat}#{request_string}"
+
 class extends lapis.Application
   "/get/*": =>
-    local splat
-    if @params.splat\find "https://"
-      splat = @params.splat
-    else
-      splat = @params.splat\gsub "https:/", "https://"
-    @params.splat = nil
+    url = parse_url(@)
+    body, status_code, headers = http.simple url
 
-    request_string = "?"
-    for key, value in pairs @params
-      request_string ..= "#{key}=#{value}&"
-    request_string = request_string\sub 1, -2
-
-    body, status_code, headers = http.simple "#{splat}#{request_string}"
-
+    -- IDEA forward headers in return?
     return layout: false, status: status_code, body
-    -- todo return with same headers?
 
   "/test/*": =>
-    local splat
-    if @params.splat\find "https://"
-      splat = @params.splat
-    else
-      splat = @params.splat\gsub "https:/", "https://"
-    @params.splat = nil
-
-    request_string = "?"
-    for key, value in pairs @params
-      request_string ..= "#{key}=#{value}&"
-    request_string = request_string\sub 1, -2
-
-    return layout: false, "#{splat}#{request_string}"
+    return layout: false, parse_url(@)
