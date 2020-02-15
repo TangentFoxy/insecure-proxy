@@ -2,4 +2,3 @@
 *_temp/
 logs/
 nginx.conf.compiled
-insecure-proxy.service
